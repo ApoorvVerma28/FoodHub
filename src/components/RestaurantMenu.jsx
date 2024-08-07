@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 
+
+let veg = "https://www.pngkey.com/png/detail/261-2619381_chitr-veg-symbol-svg-veg-and-non-veg.png"
+let nonVeg = "https://cdn.vectorstock.com/i/500p/00/43/non-vegetarian-sign-veg-logo-symbol-vector-50890043.jpg"
+
 const RestaurantMenu = () => {
 
   const { id } = useParams();
@@ -15,7 +19,10 @@ const RestaurantMenu = () => {
   const [resInfo, setResInfo] = useState([]);
   const [discountData, setDiscountData] = useState([]);
   const [value, setValue] = useState(0);
-  const [currIndex, setCurrIndex] = useState(null);
+  const [topPicksData, setTopPicksData] = useState(null);
+
+  
+
   function handleNext() {
 
   }
@@ -27,20 +34,18 @@ const RestaurantMenu = () => {
     let data = await fetch(`https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.5355161&lng=77.3910265&restaurantId=${mainId}&catalog_qa=undefined&submitAction=ENTER`)
     let res = await data.json();
     //console.log(res?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers);
-    setMenuData()
     setDiscountData(res?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers)
     setResInfo(res?.data?.cards[2]?.card?.card?.info)
-    let actualMenu = (res?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards).filter((data) => data?.card?.card?.itemCards)
+    let actualMenu = (res?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards).filter((data) => data?.card?.card?.itemCards || data?.card?.card?.categories)
     setMenuData(actualMenu)
+    setTopPicksData((res?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards).filter(data => data?.card?.card?.title == "Top Picks")[0])
   }
 
   useEffect(() => {
     fetchMenu();
   }, [])
 
-  function toggleFun(i) {
-    setCurrIndex(i === currIndex ? null : i)
-  }
+
 
   return (
     <>
@@ -89,7 +94,6 @@ const RestaurantMenu = () => {
 
 
           <div className='w-full overflow-hidden'>
-
             <div className='flex justify-between mt-8'>
               <h1 className='font-bold text-xl'>Deals for you</h1>
               <div className='flex gap-3'>
@@ -123,28 +127,48 @@ const RestaurantMenu = () => {
               <i className="absolute  fi fi-rr-search top-[14px] right-4"></i>
             </div>
 
-            <div >
-              {
-                menuData.map(({ card: { card: { itemCards, title } } }, i) => (
-                  <div >
-                    <div className='flex justify-between'>
-                      <h1>{title}({itemCards.length})</h1>
-                      <i onClick={() => toggleFun(i)} className="fi text-2xl fi-rr-angle-small-down"></i>
-                    </div>
-                    {
-                      currIndex === i &&
-                      <div className='m-5'>
-                        {
-                          itemCards.map(({ card: { info } }) => (
-                            <h1>{info.name}</h1>
-                          ))
-                        }
-                      </div>
-                    }
+            {
+              topPicksData &&
+            <div className='w-full overflow-hidden'>
+            <div className='flex justify-between mt-8'>
+              <h1 className='font-bold text-xl'>{topPicksData.card.card.title}</h1>
+              <div className='flex gap-3'>
+                <div onClick={handlePrev} className={`  cursor-pointer rounded-full w-9 h-9 flex justify-center items-center ` + (value <= 0 ? "bg-gray-100" : "bg-gray-200")}>
+                  <i className={` fi text-2xl mt-1 fi-rr-arrow-small-left ` + (value <= 0 ? "text-gray-300" : "text-gray-800")}></i>
+                </div>
+                <div onClick={handleNext} className={` cursor-pointer rounded-full w-9 h-9 flex justify-center items-center ` + (value >= 128 ? "bg-gray-100" : "bg-gray-200")}>
+                  <i className={` fi text-2xl mt-1 fi-rr-arrow-small-right ` + (value >= 150 ? "text-gray-300" : "text-gray-800")}></i>
+                </div>
+              </div>
+            </div>
+
+
+            <div className='flex gap-4 mt-5'>
+              {   topPicksData?.card?.card?.carousel.map(({creativeId,dish:{info:{defaultPrice,price}}}) => (
+               
+
+                <div className='min-w-[288px] h-[295px] relative'>
+                  <img className='w-full h-full ' src={"https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_292,h_300/" + creativeId} alt="" />
+
+                  <div className='w-full absolute bottom-4 items-center flex justify-between text-white px-5'>
+                    <p className='text-xl '>₹{defaultPrice/100 ||Math.floor(price / 100)}</p>
+                    <button className='px-10 font-bold text-green-700 text-xl bg-white rounded-xl py-2'>Add</button>
                   </div>
 
-                ))
-              }
+                </div>
+
+                ))}
+            </div>
+
+           </div>
+
+            }
+
+
+            <div >
+              {menuData.map(({ card: { card } }) => (
+                <MenuCard card={card} />
+              ))}
             </div>
 
           </div>
@@ -155,6 +179,9 @@ const RestaurantMenu = () => {
   )
 }
 
+
+
+
 function Discount({ data: { info: { header, offerLogo, couponCode } } }) {
   return (
     <div className='flex gap-2  min-w-[328px] border border-slate-300 rounded-2xl p-3 h-[76px]'>
@@ -164,6 +191,113 @@ function Discount({ data: { info: { header, offerLogo, couponCode } } }) {
         <p className='text-slate-500'>{couponCode}</p>
       </div>
     </div>
+  )
+}
+
+
+function MenuCard({ card }) {
+
+  let toggle = false;
+  if (card["@type"]) {
+    toggle = true;
+  }
+
+  const [isOpen, setIsOpen] = useState(toggle);
+
+  function toggleDropDown() {
+    setIsOpen((prev) => !prev)
+  }
+
+  if (card.itemCards) {
+    // console.log(card.itemCards)
+    const { title, itemCards } = card;
+
+    return (
+      <>
+        <div className='mt-7'>
+          <div className='flex justify-between'>
+            <h1 className={"font-bold text-" + (card['@type'] ? "xl" : "base")}>{title} ({itemCards.length})</h1>
+            <i onClick={toggleDropDown} className={"fi text-xl  fi-rr-angle-small-" + (isOpen ? "up" : "down")}></i>
+          </div>
+
+          {isOpen && <DetailMenu itemCards={itemCards} />}
+
+        </div>
+        <hr className={"my-5 border-" + (card["@type"] ? "[10px]" : "[4px]")} />
+      </>
+    )
+  }
+  else {
+    const { title, categories } = card;
+    return (
+      <div>
+        <h1 className='font-bold text-xl '>{title}</h1>
+        {
+          categories.map((data) => (
+            <MenuCard card={data} />
+          ))
+        }
+
+      </div>
+    )
+  }
+
+}
+
+
+
+function DetailMenu({ itemCards }) {
+
+
+
+  return (
+    <div className='my-5'>{
+      itemCards.map(({ card: { info } }) => (
+     
+     
+        <DetailMenuCard info={info} />
+
+
+      ))
+    }
+    </div>
+  )
+}
+
+function DetailMenuCard({info :{ name, defaultPrice, price, itemAttribute: { vegClassifier }, ratings: { aggregatedRating: { rating, ratingCountV2 } }, description, imageId }}) {
+  const [isMore, setIsMore] = useState(false);
+
+
+  let trimeDes = description?.substring(0, 138) + "...";
+  return (
+    <>
+      <div className='flex w-full  justify-between min-h-[182px]'>
+        <div className='w-[70%]'>
+          <img className='w-4 rounded-sm' src={(vegClassifier === "VEG" ? veg : nonVeg)} alt="" />
+         
+          <h2 className='font-bold text-lg'>{name}</h2>
+          <p>₹{defaultPrice / 100 || Math.floor(price / 100)}</p>
+         {
+          rating &&  <p className='flex items-center gap-1'> <i className={"fi mt-1 fi-ss-star text-green-700"}></i> <span>{rating}({ratingCountV2})</span> </p>
+         }
+         
+          
+          {
+            description?.length > 140 ? <div>
+            <span className='text-[16px] mt-1'>{isMore ? description : trimeDes}</span>
+            <button onClick={() => setIsMore(!isMore)} className='font-bold '>{isMore ? "less" : "more"}</button>
+            </div> : <span className=''>{description}</span>
+
+          }
+          
+        </div>
+        <div className='w-[20%] relative h-full'>
+          <img className='rounded-xl w-[156px] h-[144px] object-cover ' src={"https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/" + imageId} alt="" />
+          <button className='bg-white bottom-[-20px] left-5 absolute text-lg font-bold  text-green-700 border px-10 drop-shadow rounded-xl py-2'>Add</button>
+        </div>
+      </div>
+      <hr className='my-5' />
+    </>
   )
 }
 
