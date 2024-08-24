@@ -1,11 +1,11 @@
 import React from 'react'
 import RestaurantCard from './RestaurantCard'
-const OnilneFoodDelivery = ({ data }) => {
+const OnilneFoodDelivery = ({ data,title }) => {
     return (
         <>
 
-            <div className='mt-3'>
-                <h1 className='font-bold text-2xl' >Restaurants with online food delivery in Delhi</h1>
+            <div className='mt-8'>
+                <h1 className='font-bold text-2xl' >{title}</h1>
               
               <div className='grid grid-cols-3 gap-5 mt-4'>
                 {

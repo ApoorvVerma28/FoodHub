@@ -22,7 +22,7 @@ const RestaurantCard = (info) => {
                         
                         </div>
 
-                        <div className='mt-3'>
+                        <div className='mt-3 mb-5'>
                             <h2 className='text-lg font-semibold '>{info?.name}</h2>
                             <p className='flex items-center gap-1 text-base font-semibold'> <i className=" mt-1 text-green-600 text-xl fi fi-ss-circle-star"></i> {info?.avgRating} <span className='mb-3 text-2xl'>.</span> <span>{info?.sla?.slaString}</span></p>
                             <p className='line-clamp-1 text-black/60'>{info?.cuisines.join(", ")}</p>
