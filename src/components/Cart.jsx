@@ -123,7 +123,7 @@ const Cart = () => {
                             </div>
 
                             <div className='md:w-[20%] w-[200px] relative h-full'>
-                                <img className='rounded-xl w-[200px] md:w-[170px] md:h-[144px] object-cover ' src={"https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/" + data.imageId} alt="" />
+                                <img className='rounded-xl w-[200px] md:w-[170px] md:h-[144px] object-cover ' src={"https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/" + data?.imageId} alt="" />
                                
                                 <button onClick={() => removeFromCart(i)} className='bg-red-700 bottom-[-20px]   absolute text-base font-bold  text-white w-full md:px-5 drop-shadow rounded-xl py-2'>Remove</button>
                                

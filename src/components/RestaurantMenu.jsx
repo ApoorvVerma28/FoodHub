@@ -316,7 +316,7 @@ function DetailMenu({ itemCards }) {
 
 function DetailMenuCard({ info }) {
 
-  const { name, defaultPrice, price, itemAttribute, ratings: { aggregatedRating: { rating, ratingCountV2 } }, description, imageId } = info;
+  const { name, defaultPrice, price, itemAttribute, ratings: { aggregatedRating: { rating, ratingCountV2 } }, description, imageId = " "} = info;
 
   //const { cartData, setCartData } = useContext(CartContext)
  
