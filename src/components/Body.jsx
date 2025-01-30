@@ -3,6 +3,7 @@ import Scroll from './Scroll';
 import TopRestaurant from './TopRestaurant';
 import OnilneFoodDelivery from './OnilneFoodDelivery';
 import { Coordinate } from '../Context/contextApi';
+import Shimmer from './Shimmer';
 const Body = () => {
 
  const [topRestaurantData,setTopRestaurantData] = useState([])
@@ -13,11 +14,20 @@ const Body = () => {
  const [unserviceableData,setUnserviceableData] = useState({})
   // fetch top restaurant data here...  
   async function fetchData() {
-    const data = await fetch(`https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`)
+    const data = await fetch(`${import.meta.env.VITE_BASE_URL}/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`)
     const result = await data.json();
+    //console.log(result?.data)
    // console.log(result?.data?.cards[0]?.card?.card?.imageGridCards?.info);
-   setTopRestaurantData(result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants)
-   setScrollData(result?.data?.cards[0]?.card?.card?.imageGridCards?.info)
+
+
+    const filteredTopResData = result?.data?.cards.find( (data) => data?.card?.card?.id == "top_brands_for_you")?.card?.card?.gridElements?.infoWithStyle?.restaurants
+
+    const filteredTopResData2 = result?.data?.cards.find( (data) => data?.card?.card?.id == "restaurant_grid_listing")?.card?.card?.gridElements?.infoWithStyle?.restaurants
+
+
+   setTopRestaurantData(filteredTopResData || filteredTopResData2)
+   const filteredScrollData = result?.data?.cards.find( (data) => data?.card?.card?.id == "whats_on_your_mind")?.card?.card?.imageGridCards?.info
+   setScrollData(filteredScrollData)
    setTopResTitle(result?.data?.cards[1]?.card?.card?.header?.title)
    setOnlineTitle(result?.data?.cards[2]?.card?.card?.title)
     // fetch unserviceable data here.. 
@@ -42,14 +52,28 @@ if (unserviceableData.communication ){
 
         <div className='w-full '>
 
-            <div className='w-[80%] mx-auto  mt-3 overflow-hidden'>
-               <Scroll data={scrollData} />
-               <TopRestaurant data={topRestaurantData} title={topResTitle} />
-               <OnilneFoodDelivery data={topRestaurantData} title={onlineTitle} />
-            </div>
+            {
+                topRestaurantData.length ?
+                 ( <div className='w-full px-8 sm:w-[90%]  md:w-[80%] mx-auto  mt-3 overflow-hidden'>
+                    {
+                        
+                        scrollData?.length ? ( 
+                            <>
+                        <Scroll data={scrollData} />
+                        <TopRestaurant data={topRestaurantData} title={topResTitle} />
+                        </>
+                    ) : " " }
+            
+                          
+                           <OnilneFoodDelivery data={topRestaurantData} title={onlineTitle} />
+                       
+                        </div>
+                        ) : <Shimmer/>
+            }
+
+           
 
         
-
         </div>
     )
 }

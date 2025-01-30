@@ -6,3 +6,44 @@
 *{
     box-sizing: border-box;
 }
+
+
+.filterBtn {
+    border: 1px solid rgb(191, 191, 191);
+    padding: 10px 20px;
+    border-radius: 40px;
+    
+}
+
+.active {
+    background-color: #3e4152;
+    color: white;
+    border: 1px solid;
+}
+
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #000000;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    padding: 30px;
+    opacity: 80%;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+

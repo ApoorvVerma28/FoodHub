@@ -43,8 +43,8 @@ const Scroll = ({data}) => {
                 style={{translate: `-${value}%`}}
                 className= {`flex mt-4  duration-300`}>
                     {
-                        data.map((item) => (
-                            <img className='w-36' src={`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/${item.imageId}`} alt="" />
+                        data?.map((item, id) => (
+                            <img key={id} className='w-36' src={`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/${item.imageId}`} alt="" />
                         ))
                     }
                 </div>
