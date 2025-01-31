@@ -92,7 +92,7 @@ const Navbar = () => {
           <input placeholder='Search for aera and street name' className='border p-5 my-5 rounded-2xl border-gray-300 focus:outline-none focus:shadow-xl' type="text" onChange={(e) => searchResultFunc(e.target.value)} />
           <div className='border p-5'>
             <Link to={"/"}>
-              {searchResult.map((data) => {
+              {searchResult.map((data,i) => {
                 const isLast = (i === searchResult.length - 1)
 
                 return (
