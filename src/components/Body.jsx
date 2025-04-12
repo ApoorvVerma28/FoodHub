@@ -16,17 +16,27 @@ const Body = () => {
   async function fetchData() {
     const data = await fetch(`${import.meta.env.VITE_BASE_URL}/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`)
     const result = await data.json();
-    //console.log(result?.data)
-   // console.log(result?.data?.cards[0]?.card?.card?.imageGridCards?.info);
+    console.log(result)
+    //console.log(result?.data?.cards[0]?.card?.card?.imageGridCards?.info);
+    const card = result?.data?.cards.find(
+        (c) => c?.card?.card?.id === "restaurant_grid_listing_v2"
+      );
+      
+    //   console.log("Card:", card); // Is it undefined?
+    //   console.log("Grid Elements:", card?.card?.card?.gridElements);
+      
 
 
-    const filteredTopResData = result?.data?.cards.find( (data) => data?.card?.card?.id == "top_brands_for_you")?.card?.card?.gridElements?.infoWithStyle?.restaurants
+      const filteredTopResData = card?.card?.card?.gridElements?.infoWithStyle?.restaurants;
+      //console.log(filteredTopResData)
+    //console.log(filteredTopResData)
+    // const filteredTopResData2 = result?.data?.cards.find( (data) => data?.cards?.card?.id == "restaurant_grid_listing")?.card?.card?.gridElements?.infoWithStyle?.restaurants
+    //console.log(filteredTopResData2)
 
-    const filteredTopResData2 = result?.data?.cards.find( (data) => data?.card?.card?.id == "restaurant_grid_listing")?.card?.card?.gridElements?.infoWithStyle?.restaurants
-
-
-   setTopRestaurantData(filteredTopResData || filteredTopResData2)
-   const filteredScrollData = result?.data?.cards.find( (data) => data?.card?.card?.id == "whats_on_your_mind")?.card?.card?.imageGridCards?.info
+   setTopRestaurantData(filteredTopResData )
+    //console.log(filteredTopResData2)
+   const filteredScrollData = result?.data?.cards.find( (data) => data?.cards?.card?.id == "whats_on_your_mind")?.card?.card?.imageGridCards?.info
+   //console.log(filteredScrollData)
    setScrollData(filteredScrollData)
    setTopResTitle(result?.data?.cards[1]?.card?.card?.header?.title)
    setOnlineTitle(result?.data?.cards[2]?.card?.card?.title)
@@ -53,7 +63,7 @@ if (unserviceableData.communication ){
         <div className='w-full '>
 
             {
-                topRestaurantData.length ?
+                topRestaurantData?.length ?
                  ( <div className='w-full px-8 sm:w-[90%]  md:w-[80%] mx-auto  mt-3 overflow-hidden'>
                     {
                         
@@ -62,7 +72,7 @@ if (unserviceableData.communication ){
                         <Scroll data={scrollData} />
                         <TopRestaurant data={topRestaurantData} title={topResTitle} />
                         </>
-                    ) : " " }
+                    ) : "  " }
             
                           
                            <OnilneFoodDelivery data={topRestaurantData} title={onlineTitle} />
